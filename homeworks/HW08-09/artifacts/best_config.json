@@ -1,0 +1,30 @@
+{
+    "dataset": "EMNIST",
+    "seed": 42,
+    "model_architecture": {
+        "input_size": 784,
+        "hidden_sizes": [
+            512,
+            256,
+            128
+        ],
+        "num_classes": 47,
+        "dropout": 0.3,
+        "use_batchnorm": false,
+        "activation": "ReLU"
+    },
+    "training_config": {
+        "optimizer": "Adam",
+        "learning_rate": 0.001,
+        "batch_size": 128,
+        "num_epochs": 20,
+        "early_stopping_patience": 5,
+        "loss_function": "CrossEntropyLoss"
+    },
+    "results": {
+        "best_val_accuracy": 0.8444562146892656,
+        "best_val_loss": 0.47155691136074607,
+        "test_accuracy": 0.8363247083968857,
+        "test_loss": 0.48383702023499675
+    }
+}
