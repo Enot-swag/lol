@@ -1,0 +1,9 @@
+query,expected_source,before_retrieved_sources,after_retrieved_sources,changed
+Какая планета самая близкая к Солнцу?,doc_02,"doc_09, doc_04, doc_02","doc_09, doc_04, doc_02",False
+Чем знаменит Юпитер?,doc_06,"doc_06, doc_07","doc_06, doc_07",False
+Из чего состоят кольца Сатурна?,doc_07,"doc_07, doc_01","doc_07, doc_11",True
+Какая планета была открыта с помощью расчетов?,doc_09,"doc_09, doc_07, doc_01","doc_09, doc_07, doc_01",False
+Почему Марс красный?,doc_05,"doc_05, doc_07","doc_05, doc_11",True
+Какой статус у Плутона сейчас?,doc_10,"doc_10, doc_07","doc_10, doc_07",False
+Где находится пояс астероидов?,doc_11,"doc_01, doc_07, doc_03","doc_11, doc_01",True
+Что такое облако Оорта?,doc_12,"doc_01, doc_03, doc_07","doc_12, doc_01",True
