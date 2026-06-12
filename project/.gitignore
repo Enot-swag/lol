@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+.env
+models/*.pkl
+models/*.pth
+logs/
+mlflow.db
+mlflow_artifacts/
+.DS_Store
+*.log

@@ -1,9 +1,0 @@
-{
-    "dataset": "STL10",
-    "architecture": "ResNet18",
-    "experiment": "C4",
-    "transforms": "resnet",
-    "seed": 42,
-    "best_val_accuracy": 0.951,
-    "test_accuracy": 0.690125
-}

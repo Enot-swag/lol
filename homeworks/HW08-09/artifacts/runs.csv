@@ -1,8 +1,0 @@
-experiment_id,dataset,seed,model_summary,optimizer,lr,momentum,weight_decay,epochs_trained,best_val_accuracy,best_val_loss
-E1,CIFAR10,42,"hid=(256,128) | act=relu | dp=0.0 | bn=False",adam,0.001,0.0,0.0,15,0.5237,1.3894
-E2,CIFAR10,42,"hid=(256,128) | act=relu | dp=0.3 | bn=False",adam,0.001,0.0,0.0,15,0.5261,1.3549
-E3,CIFAR10,42,"hid=(256,128) | act=relu | dp=0.0 | bn=True",adam,0.001,0.0,0.0,15,0.5507,1.318
-E4,CIFAR10,42,"hid=(256,128) | act=relu | dp=0.0 | bn=True",adam,0.001,0.0,0.0,13,0.5507,1.318
-O1,CIFAR10,42,"hid=(256,128) | act=relu | dp=0.0 | bn=True",adam,0.1,0.0,0.0,8,0.4752,1.4972
-O2,CIFAR10,42,"hid=(256,128) | act=relu | dp=0.0 | bn=True",adam,1e-05,0.0,0.0,8,0.4859,1.52
-O3,CIFAR10,42,"hid=(256,128) | act=relu | dp=0.0 | bn=True",sgd,0.01,0.9,0.0001,15,0.5477,1.3251
