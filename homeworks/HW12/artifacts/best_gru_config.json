@@ -1,0 +1,41 @@
+{
+    "model_type": "GRU",
+    "seed": 42,
+    "window_size": 168,
+    "batch_size": 64,
+    "architecture": {
+        "input_size": 1,
+        "hidden_size": 128,
+        "num_layers": 2,
+        "output_size": 1,
+        "dropout": 0.2
+    },
+    "training_params": {
+        "learning_rate": 0.001,
+        "optimizer": "Adam",
+        "loss_function": "MSELoss",
+        "max_epochs": 50,
+        "early_stopping_patience": 10,
+        "epochs_trained": 11,
+        "best_val_loss": 0.9536836072802544
+    },
+    "preprocessing": {
+        "scaler": "StandardScaler",
+        "scaler_fitted_on": "train_data_only",
+        "normalization": "per_feature standardization",
+        "window_creation": "sliding_window"
+    },
+    "performance": {
+        "validation": {
+            "mae": 14.308175086975098,
+            "rmse": 16.80963723013063,
+            "mape": 9.445411682128906
+        },
+        "test": {
+            "mae": 15.387384414672852,
+            "rmse": 18.21399554708034,
+            "mape": 9.643444061279297
+        }
+    },
+    "device": "cpu"
+}
