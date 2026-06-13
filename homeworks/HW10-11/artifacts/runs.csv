@@ -1,0 +1,7 @@
+experiment_id,task,dataset,seed,model_summary,optimizer,lr,epochs_trained,best_val_accuracy,test_accuracy,precision,recall,mean_iou,notes
+C1,classification,STL10,42,SimpleCNN_Adaptive,Adam,0.001,10,0.556,0.410875,,,,без аугментаций
+C2,classification,STL10,42,SimpleCNN_Adaptive,Adam,0.001,10,0.578,0.468125,,,,с аугментациями
+C3,classification,STL10,42,ResNet18_head_only,Adam,0.001,10,0.947,0.678625,,,,замороженный backbone
+C4,classification,STL10,42,ResNet18_finetune,Adam,0.001,10,0.951,0.690125,,,,fine-tuning layer4 + fc
+V1,detection,PascalVOC,42,FasterRCNN_ResNet50_FPN,,,0,,,0.0,0.0,0,score_threshold=0.3
+V2,detection,PascalVOC,42,FasterRCNN_ResNet50_FPN,,,0,,,0,0.0,0,score_threshold=0.7

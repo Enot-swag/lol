@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
@@ -6,9 +6,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ ./src/
-COPY models/ ./models/
 COPY app.py .
 COPY .env .
+
+RUN mkdir -p models data
 
 EXPOSE 8000
 

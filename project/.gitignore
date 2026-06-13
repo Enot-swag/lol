@@ -1,11 +1,26 @@
+# Виртуальное окружение
 venv/
 __pycache__/
 *.pyc
+
+# Секреты
 .env
-models/*.pkl
-models/*.pth
+
+# Модели
+project/models/*.pkl
+project/models/*.pth
+
+# Логи
 logs/
+*.log
+
+# Данные (большие файлы)
+project/data/*.csv
+
+# MLflow
 mlflow.db
 mlflow_artifacts/
-.DS_Store
-*.log
+
+# IDE
+.vscode/
+.idea/

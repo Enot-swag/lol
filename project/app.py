@@ -1,32 +1,38 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from typing import List, Dict
 import joblib
-import numpy as np
 import pandas as pd
+import numpy as np
 import logging
-import json
-import time
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
-from fastapi.responses import Response
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"), format='{"time": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s"}')
+
+# Настройка логов
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO"),
+    format='{"time": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s"}'
+)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Credit Scoring API")
-
-# Метрики Prometheus
-REQUESTS = Counter("http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"])
-LATENCY = Histogram("http_request_duration_seconds", "Request latency", ["method", "endpoint"])
+app = FastAPI(title="Credit Scoring API", version="1.0.0")
 
 # Загрузка модели
 MODEL_PATH = os.getenv("MODEL_PATH", "models/best_model.pkl")
-model = joblib.load(MODEL_PATH)
-scaler = joblib.load("models/scaler.pkl")  # нужно сохранить из train_models
-feature_names = joblib.load("models/feature_names.pkl")
+SCALER_PATH = os.getenv("SCALER_PATH", "models/scaler.pkl")
+FEATURES_PATH = os.getenv("FEATURES_PATH", "models/feature_names.pkl")
+
+try:
+    model = joblib.load(MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
+    feature_names = joblib.load(FEATURES_PATH)
+    logger.info(f"Model loaded: {MODEL_PATH}")
+except Exception as e:
+    logger.error(f"Error loading model: {e}")
+    model = None
+    scaler = None
+    feature_names = None
 
 class CreditInput(BaseModel):
     RevolvingUtilizationOfUnsecuredLines: float = Field(..., ge=0, le=100)
@@ -39,9 +45,9 @@ class CreditInput(BaseModel):
     NumberRealEstateLoansOrLines: int = Field(..., ge=0)
     NumberOfTime60_89DaysPastDueNotWorse: int = Field(..., ge=0)
     NumberOfDependents: int = Field(..., ge=0)
-
+    
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "RevolvingUtilizationOfUnsecuredLines": 0.5,
                 "age": 45,
@@ -56,43 +62,46 @@ class CreditInput(BaseModel):
             }
         }
 
-@app.middleware("http")
-async def log_and_metrics(request: Request, call_next):
-    start = time.time()
-    response = await call_next(request)
-    duration = time.time() - start
-    REQUESTS.labels(method=request.method, endpoint=request.url.path, status=response.status_code).inc()
-    LATENCY.labels(method=request.method, endpoint=request.url.path).observe(duration)
-    logger.info(json.dumps({
-        "method": request.method,
-        "path": request.url.path,
-        "status": response.status_code,
-        "duration": duration,
-        "client": request.client.host if request.client else None
-    }))
-    return response
+class CreditOutput(BaseModel):
+    probability_default: float
+    predicted_class: int
+    is_default: bool
+
+@app.get("/")
+async def root():
+    return {"message": "Credit Scoring API", "status": "running"}
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    if model is None:
+        raise HTTPException(status_code=503, detail="Model not loaded")
+    return {"status": "healthy", "model_loaded": True}
 
-@app.get("/metrics")
-async def metrics():
-    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
-
-@app.post("/predict")
+@app.post("/predict", response_model=CreditOutput)
 async def predict(input_data: CreditInput):
+    if model is None:
+        raise HTTPException(status_code=503, detail="Model not loaded")
+    
     try:
-        df = pd.DataFrame([input_data.dict()])
-        df = df[feature_names]  # гарантируем порядок
+        input_dict = input_data.model_dump()
+        df = pd.DataFrame([input_dict])
+        df = df[feature_names]
         scaled = scaler.transform(df)
         proba = model.predict_proba(scaled)[0, 1]
         pred_class = int(proba >= 0.5)
-        return {"probability_default": float(proba), "predicted_class": pred_class}
+        
+        logger.info(f"Prediction: prob={proba:.4f}, class={pred_class}")
+        
+        return CreditOutput(
+            probability_default=float(proba),
+            predicted_class=pred_class,
+            is_default=bool(pred_class)
+        )
     except Exception as e:
-        logger.error(f"Prediction error: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"Prediction failed: {str(e)}")
+        logger.error(f"Error: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

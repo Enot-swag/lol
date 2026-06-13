@@ -1,14 +1,4 @@
-version: '3.8'
-
 services:
-  mlflow:
-    image: ghcr.io/mlflow/mlflow:v2.5.0
-    ports:
-      - "5000:5000"
-    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db
-    volumes:
-      - ./mlflow_artifacts:/mlflow/artifacts
-
   app:
     build:
       context: .
@@ -16,8 +6,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MLFLOW_TRACKING_URI=http://mlflow:5000
-    depends_on:
-      - mlflow
-    env_file:
-      - .env
+      - PORT=8000
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
